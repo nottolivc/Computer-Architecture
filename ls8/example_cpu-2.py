@@ -128,4 +128,3 @@ while running:
     else:
         print(f"Unknown instruction {instruction}")
         sys.exit(1)
-

@@ -8,56 +8,32 @@ PRINT_NUM         = 3   #0b00000011
 SAVE_REG          = 4
 PRINT_REG         = 5
 ADD               = 6
-PUSH              = 7
-POP               = 8
 
 # ADD takes TWO registers, adds their values 
 # and stores the result in the first register given
 
+
 # program that adds two numbers together
 # return
-memory = [0] * 256 
+memory = [
+    SAVE_REG,
+    200, #value 2
+    1,  # register 1
+    SAVE_REG,
+    2121, # value 2
+    2, # register 2
+    ADD,
+    1, # register 1
+    2, # register 2
+    PRINT_REG,
+    1,
+    HALT
+]
 
 registers = [0] * 8
-SP = 7
 
 running = True
 pc = 0
-
-# Get file name from command line arguments
-if len(sys.argv) != 2:
-    print("Usage: example_cpu.py filename")
-    sys.exit(1)
-
-
-def load_memory(filename):
-    # Open a file and load into memory
-    address = 0
-    try:
-        with open(filename) as f:
-            for line in f:
-                # Split the current line on the # symbol
-                split_line = line.split('#')
-
-                code_value = split_line[0].strip() # removes whitespace and \n character
-                # Make sure that the value before the # symbol is not empty
-                if code_value == '':
-                    continue
-
-                num = int(code_value)
-                memory[address] = num
-                address += 1
-                
-
-    except FileNotFoundError: 
-        print(f"{sys.argv[1]} file not found")
-        sys.exit(2)
-
-
-load_memory(sys.argv[1])
-
-# Set the top of stack correctly
-registers[SP] = len(memory)
 
 while running:
     # Read line by line from memory
@@ -104,28 +80,7 @@ while running:
     elif instruction == HALT:
         running = False
         pc += 1
-        print(memory[-20:])
-        print(registers)
-    
-    elif instruction == PUSH:
-        given_register = memory[pc + 1]
-        value_in_register = registers[given_register]
-        # decrement the Stack Pointer
-        registers[SP] -= 1
-        # write the value of the given register to memory AT the SP location
-        memory[registers[SP]] = value_in_register
-        pc += 2
-
-    elif instruction == POP:
-        given_register = memory[pc + 1]
-        # Write the value in memory at the top of stack to the given register
-        value_from_memory = memory[registers[SP]]
-        registers[given_register] = value_from_memory
-        # increment the stack pointer
-        registers[SP] += 1
-        pc += 2
 
     else:
         print(f"Unknown instruction {instruction}")
         sys.exit(1)
-
