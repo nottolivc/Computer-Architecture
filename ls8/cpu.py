@@ -1,25 +1,24 @@
 """CPU functionality."""
 
 import sys
-
-# List of instructions codes
+import os
 
 
 
 class CPU:
     """Main CPU class."""
-
     def __init__(self):
+
         """Construct a new CPU."""
-        # hold 256 bytes of memory
+        # init ram as array to hold 256 bytes of memory
         self.ram = [0] * 256
-        # hold 8 general-purpose registers
+        # init a register outside of ram to hold 8 general use registers
         self.reg = [0] * 8
-        # program counter
+        # init a program counter
         self.pc = 0
-        # stack pointer
+        # init a stack pointer
         self.sp = 7
-        # CPU running
+        # set CPU to state running
         self.running = True
 
         self.flags = {
@@ -144,10 +143,10 @@ class CPU:
             f.close()
         else:
 
-        # below, a hardcoded program
+        # set a hardcoded program
 
             program = [
-                # From print8.ls8
+                # From 
                 0b10000010, # LDI R0,8
                 0b00000000,
                 0b00001000,
@@ -166,32 +165,31 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
         elif op =='SUB':
             self.reg[reg_a] -= self.reg[reg_b]
         elif op == 'CMP':
             if self.reg[reg_a] < self.reg[reg_b]:
-                #less than L flag to 1
+                # set less than L flag to 1
                 self.flags['L'] = 1
-                # greater than flag to 0
+                # set to greater than flag to 0
                 self.flags['G'] = 0
-                # equal to flag to 0
+                # set equal to flag to 0
                 self.flags['E'] = 0
 
             elif self.reg[reg_a] > self.reg[reg_b]:
-                # greater than flag to 1
+                # set greater than flag to 1
                 self.flags['G'] = 1
-                # less than flag to 0
+                # set less than flag to 0
                 self.flags['L'] = 0
-                # equal to flag to 0
+                # set equal to flag to 0
                 self.flags['E'] = 0
             else:
-                #equal to flag to 1
+                # set equal to flag to 1
                 self.flags['E'] = 1
         else:
-            raise Exception("Unsupported ALU operation")
+            raise Exception("Error: Unsupported ALU operation.")
 
     def trace(self):
         """
@@ -201,8 +199,8 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
+            self.fl,
+            self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
@@ -227,5 +225,5 @@ class CPU:
             
 
             except:
-                print(f"Instruction not valid: {instruction_register}")
+                print(f"Instruction invalid at: {instruction_register}")
                 sys.exit()
