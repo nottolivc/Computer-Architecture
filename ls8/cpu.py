@@ -4,7 +4,6 @@ import sys
 import os
 
 
-
 class CPU:
     """Main CPU class."""
     def __init__(self):
@@ -26,85 +25,85 @@ class CPU:
             'G': 0,
             'L': 0,
         }
-
+        # set up internal register
         self.ir = {
-            0b10000010: self.ldi,
-            0b01000111: self.prn,
-            0b00000001: self.hlt,
-            0b10100010: self.mul,
-            0b01000101: self.push,
-            0b01000110: self.pop,
-            0b01010000: self.call,
-            0b00010001: self.ret,
-            0b10100000: self.add,
-            0b10100111: self.comp,
-            0b01010101: self.jeq,
-            0b01010110: self.jne,
-            0b01010100: self.jmp
+            0b10000010: self.LDI,
+            0b01000111: self.PRN,
+            0b00000001: self.HLT,
+            0b10100010: self.MUL,
+            0b01000101: self.PUSH,
+            0b01000110: self.POP,
+            0b01010000: self.CALL,
+            0b00010001: self.RET,
+            0b10100000: self.ADD,
+            0b10100111: self.COMP,
+            0b01010101: self.JEQ,
+            0b01010110: self.JNE,
+            0b01010100: self.JMP
         }
 
-    def comp(self, op1, op2):
+    def COMP(self, op1, op2):
         self.alu('CMP', op1, op2)
         return (3, True)
     
-    def jne(self, op1, op2):
+    def JNE(self, op1, op2):
         if self.flags['E'] == 0:
             self.pc = self.reg[op1]
             return (0, True)
         else:
             return(2, True)
 
-    def jeq(self, op1, op2):
+    def JEQ(self, op1, op2):
         if self.flags['E'] == 1:
             self.pc = self.reg[op1]
             return (0, True)
         else:
             return (2, True)
     
-    def jmp(self, op1, op2):
+    def JMP(self, op1, op2):
         self.pc = self.reg[op1]
         return (0, True)
 
-    def hlt(self, op1, op2):
+    def HLT(self, op1, op2):
         self.running = False
         return (0, False)
 
-    def ldi(self, op1, op2):
+    def LDI(self, op1, op2):
         self.reg[op1] = op2
         return(3, True)
 
-    def prn(self, op1, op2):
+    def PRN(self, op1, op2):
         print(self.reg[op1])
         return(2, True)
 
 
-    def mul(self, op1, op2):
-        self.alu("MUL",op1, op2)
+    def MUL(self, op1, op2):
+        self.alu("MUL", op1, op2)
         return(3, True)
 
 
-    def pop(self, op1, op2):
+    def POP(self, op1, op2):
         self.reg[op1] = self.ram_read(self.reg[self.sp])
         self.reg[self.sp] += 1
         return(2, True)
 
-    def push(self, op1, op2):
+    def PUSH(self, op1, op2):
         self.reg[self.sp] -= 1
         self.ram_write(self.reg[op1], self.reg[self.sp])
         return(2, True)
 
-    def call(self, op1, op2):
+    def CALL(self, op1, op2):
         self.sp -= 1
         self.ram[self.sp] = self.pc + 2
         self.pc = self.reg[op1]
         return (0, True)
 
 
-    def ret(self, op1, op2):
+    def RET(self, op1, op2):
         self.pc = self.ram[self.sp]
         return (0, True)
 
-    def add(self, op1, op2):
+    def ADD(self, op1, op2):
         self.alu('ADD', op1, op2)
         return (3, True)
 
@@ -112,7 +111,7 @@ class CPU:
         if address < len(self.ram):
             return self.ram[address]
         else:
-            print("address is too high:" + str(address))
+            print("Error: Address out of range at RAM location:" + str(address))
             sys.exit(1)
 
     def ram_write(self, value, address):
@@ -191,25 +190,23 @@ class CPU:
         else:
             raise Exception("Error: Unsupported ALU operation.")
 
-    def trace(self):
-        """
-        Handy function to print out the CPU state. You might want to call this
-        from run() if you need help debugging.
-        """
+    # def trace(self):
+    #     """
+    #     Handy function to print out the CPU state. You might want to call this
+    #     from run() if you need help debugging.
+    #     """
 
-        print(f"TRACE: %02X | %02X %02X %02X |" % (
-            self.pc,
-            self.fl,
-            self.ie,
-            self.ram_read(self.pc),
-            self.ram_read(self.pc + 1),
-            self.ram_read(self.pc + 2)
-        ), end='')
+    #     print(f"TRACE: %02X | %02X %02X %02X |" % (
+    #         self.pc,
+    #         self.ram_read(self.pc),
+    #         self.ram_read(self.pc + 1),
+    #         self.ram_read(self.pc + 2)
+    #     ), end='')
 
-        for i in range(8):
-            print(" %02X" % self.reg[i], end='')
+    #     for i in range(8):
+    #         print(" %02X" % self.reg[i], end='')
 
-        print()
+    #     print()
 
 
 
