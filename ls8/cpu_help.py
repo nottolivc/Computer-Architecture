@@ -62,21 +62,21 @@ class CPU:
             elif a > b:
                 self.fl = 0b010
         else:
-            raise Exception("Unsupported ALU operation")
+            raise Exception("Error: Unsupported ALU operation.")
 
     def spc(self, op, reg):
         if op == "CALL":
-            #Push return address onto stack
+            # push the return address on to the stack
             self.reg[7] -= 1
             MAR = self.reg[7]
             MDR = self.pc + 2
             self.ram_write(MAR, MDR)
-            #Set new PC
+            # set new PC register
             self.pc = self.reg[reg]
         elif op == "RET":
-            #Pop top value off stack
+            # pop the value off the top stack register
             MAR = self.reg[7]
-            #Set new PC
+            # set new PC register
             self.pc = self.ram_read(MAR)
             self.reg[7] += 1
         elif op == "JMP":
@@ -112,8 +112,8 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
+            self.fl,
+            self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
@@ -123,6 +123,7 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+
     def __verify_reg__(self, register):
         if (register >> 3 & 0b11111) != 0:
             return False
@@ -201,7 +202,7 @@ class CPU:
                 0b0110: POP,
                 0b0001: HLT
             }
-            # Get the function from switcher dictionary
+            # the function is not in the operations dict
             if opcode not in operations:
                 print(f"Invalid instruction {opcode} at address {cpu.pc}")
                 return False

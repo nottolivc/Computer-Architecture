@@ -6,5 +6,5 @@ from cpu import *
 
 cpu = CPU()
 
-cpu.load("call.ls8")
+cpu.load()
 cpu.run()
